@@ -82,17 +82,31 @@ void SendSerial(){
 
 void loop() {
 
-  digitalWrite(Buzzer_Output, HIGH);
-  delay(500);
-  digitalWrite(Buzzer_Output, LOW);
-  delay(500);
-  digitalWrite(Buzzer_Output, HIGH);
-  delay(500);
-  digitalWrite(Buzzer_Output, LOW);
-  delay(500);
-  digitalWrite(Buzzer_Output, HIGH);
-  delay(500);
-  digitalWrite(Buzzer_Output, LOW);
-  delay(500);
+    // Remise à zéro des variables de communications à chaque boucle
+  Address = 0;    
+  Command = 0;
+  State = 0;
+  
+  ReadSerial();   // Lecture série
+
+  Address = RxdBuffer[0];
+  Command = RxdBuffer[1];
+  
+  Check_serial_is_OK = 0;
+  // Tester la trame recu
+  if ((Address != Start_Command) && (Command != Start_Command)){      // si la trame est correct (pas de 9 dans la commande ou l'adresse)   
+      Check_serial_is_OK = 1;
+  }
+  else{                                                               // si la trame est mauvaise, ou identique, ne rien faire dans le switch/case
+    Address = 0;
+  }
+  
+  State = 1;
+  SendSerial();
+
+  if (((Address == 1) && (Command == 0)) || (digitalRead(Carriage_OriginSensor) == false)){
+   // Début de la démo
+  }
+  FlushIncomingSerial();
   
 }
